@@ -35,6 +35,22 @@ func readFile(path *string) *[]string {
 	}
 
 	defer fi.Close()
+	
+	ch := make(chan int)
+	fmt.Print("LoadingFile")
+	go func() {
+		for {
+			select {
+			case <-ch:
+				fmt.Println()
+				fmt.Println("Loading Over")
+				return
+			default:
+				time.Sleep(time.Second)
+				fmt.Print(".")
+			}
+		}
+	}()
 
 	var strs []string
 	buf := make([]byte, 2048)
@@ -45,6 +61,7 @@ func readFile(path *string) *[]string {
 		}
 		strs = append(strs, string(buf[:n]))
 	}
+	ch <- 1
 	return &strs
 }
 
